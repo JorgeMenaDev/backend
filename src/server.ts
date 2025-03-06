@@ -1,13 +1,15 @@
 import { Elysia } from 'elysia'
 import { cors } from '@elysiajs/cors'
 import { StatusCodes } from 'http-status-codes'
-import productRoutes from './routes/products.ts'
-import categoryRoutes from './routes/categories.ts'
-import inventoryRoutes from './routes/inventory.ts'
+import productRoutes from './routes/products'
+import categoryRoutes from './routes/categories'
+import inventoryRoutes from './routes/inventory'
+import seedRoutes from './routes/seed'
+import './db/init'
 
 // Load environment variables - Bun has built-in support for .env files
-const port = Number(process.env.PORT) || 3000
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['*']
+const port = Number(Bun.env.PORT) || 3000
+const allowedOrigins = Bun.env.ALLOWED_ORIGINS?.split(',') || ['*']
 
 // Initialize the app
 const app = new Elysia()
@@ -37,7 +39,7 @@ const app = new Elysia()
 		timestamp: new Date().toISOString()
 	}))
 	// Mount routes
-	.group('/api', app => app.use(productRoutes).use(categoryRoutes).use(inventoryRoutes))
+	.group('/api', app => app.use(productRoutes).use(categoryRoutes).use(inventoryRoutes).use(seedRoutes))
 
 // Start the server
 app.listen(port, () => {
