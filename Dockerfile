@@ -1,33 +1,23 @@
 # Dockerfile for Deno API
-FROM denoland/deno:1.40.2
+FROM oven/bun:1.0.30
 
 # Set working directory
 WORKDIR /app
 
-# Create data directory for SQLite database
-RUN mkdir -p /app/data
+# Copy package files
+COPY package.json bun.lockb ./
 
-# Copy configuration files first for better caching
-COPY deno.json import_map.json ./
-
-# Copy dependency file
-COPY deps.ts .
-RUN deno cache deps.ts
+# Install dependencies
+RUN bun install --frozen-lockfile
 
 # Copy source code
-COPY src/ ./src/
+COPY . .
 
-# Verify installation
-RUN deno --version
+# Set environment variables
+ENV NODE_ENV=production
 
-# Cache application code
-RUN deno cache src/server.ts
-
-# Set permissions
-RUN chmod -R 755 /app
-
-# Expose the API port
+# Expose the port
 EXPOSE 3000
 
-# Run the API server
-CMD ["run", "--allow-net", "--allow-read", "--allow-write", "--allow-env", "src/server.ts"]
+# Start the server
+CMD ["bun", "run", "start"]

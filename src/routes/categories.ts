@@ -1,8 +1,6 @@
-import { Router } from '../../deps.ts'
-import { getCategories } from '../controllers/category_controller.ts'
+import { Elysia } from 'elysia'
+import { getCategories } from '../controllers/category_controller'
 
-const router = new Router()
+const app = new Elysia({ prefix: '/categories' }).get('/', getCategories)
 
-router.get('/api/categories', getCategories)
-
-export default router
+export default app

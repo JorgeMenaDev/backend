@@ -1,16 +1,16 @@
-import { DB } from '../../deps.ts'
-import config from '../config.ts'
+import { Database } from 'bun:sqlite'
+import config from '../config'
 
-// Create a singleton database instance
-let db: DB | null = null
+// Initialize the database
+const db = new Database(config.dbPath)
+
+// Enable foreign keys
+db.run('PRAGMA foreign_keys = ON')
+
+export default db
 
 // Get database connection
-export function getDB(): DB {
-	if (!db) {
-		db = new DB(config.dbPath)
-		initDatabase()
-		seedDatabase()
-	}
+export function getDB(): Database {
 	return db
 }
 
@@ -19,7 +19,7 @@ function initDatabase() {
 	const db = getDB()
 
 	// Create products table
-	db.execute(`
+	db.run(`
     CREATE TABLE IF NOT EXISTS products (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
@@ -34,7 +34,7 @@ function initDatabase() {
   `)
 
 	// Create qm_purpose table
-	db.execute(`
+	db.run(`
     CREATE TABLE IF NOT EXISTS qm_purpose (
       id TEXT PRIMARY KEY,
       text TEXT NOT NULL,
@@ -100,7 +100,6 @@ function seedDatabase() {
 export function closeDB() {
 	if (db) {
 		db.close()
-		db = null
 	}
 }
 

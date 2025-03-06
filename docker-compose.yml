@@ -1,36 +1,24 @@
 # docker-compose.yml for standalone Deno API
-version: '3'
+version: '3.8'
 
 services:
   api:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
     ports:
       - '3000:3000'
     volumes:
-      - ./src:/app/src
       - ./data:/app/data
-      - ./deno.json:/app/deno.json
-      - ./import_map.json:/app/import_map.json
-      - ./deps.ts:/app/deps.ts
     environment:
+      - NODE_ENV=development
       - PORT=3000
-      - NODE_ENV=production
-      - ALLOWED_ORIGINS=http://localhost:3001,https://yourdomain.com
+      - DB_PATH=/app/data/database.sqlite
+      - ALLOWED_ORIGINS=http://localhost:3000
     restart: unless-stopped
     healthcheck:
-      test:
-        [
-          'CMD',
-          'deno',
-          'eval',
-          "try { await fetch('http://localhost:3000/api/health'); Deno.exit(0) } catch(e) { Deno.exit(1) }"
-        ]
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/api/health']
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 10s
 
   # Optional: Database administration tool
   adminer:

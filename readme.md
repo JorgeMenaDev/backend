@@ -1,64 +1,161 @@
-# Inventory API Service
+# Backend API
 
-A standalone RESTful API service for inventory management built with Deno and SQLite. This service is designed to be completely independent and can serve multiple frontend applications.
+A modern, fast backend API built with Bun and Elysia.
 
-## Features
+## 🚀 Features
 
-- Complete inventory management system
-- RESTful API with CRUD operations
-- SQLite database with persistent storage
-- Docker Compose setup for easy deployment
-- Cross-Origin Resource Sharing (CORS) support
+- Built with Bun - ultra-fast JavaScript runtime and toolkit
+- Elysia.js for routing and middleware
+- Built-in SQLite support
+- TypeScript support out of the box
+- Docker support
+- Environment configuration
+- CORS enabled
 - Health check endpoint
-- Structured project organization
+- Request logging
+- Error handling
 
-## API Endpoints
+## 📋 Prerequisites
+
+- [Bun](https://bun.sh) (v1.0.30 or higher)
+- Docker (optional, for containerized development)
+
+## 🛠 Installation
+
+1. Install Bun (if not already installed):
+
+```bash
+curl -fsSL https://bun.sh/install | bash
+```
+
+2. Clone the repository:
+
+```bash
+git clone <your-repo-url>
+cd backend
+```
+
+3. Install dependencies:
+
+```bash
+bun install
+```
+
+4. Set up environment variables:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` with your configuration.
+
+## 🚀 Running the Application
+
+### Development Mode
+
+```bash
+bun run dev
+```
+
+This will start the server in development mode with hot reloading.
+
+### Production Mode
+
+```bash
+bun run start
+```
+
+### Using Docker
+
+```bash
+docker-compose up
+```
+
+## 🔧 Environment Variables
+
+| Variable             | Description                            | Default               |
+| -------------------- | -------------------------------------- | --------------------- |
+| PORT                 | Server port                            | 3000                  |
+| NODE_ENV             | Environment mode                       | development           |
+| DB_PATH              | SQLite database path                   | data/database.sqlite  |
+| ALLOWED_ORIGINS      | CORS allowed origins                   | http://localhost:3000 |
+| LOG_LEVEL            | Logging level                          | DEBUG                 |
+| DEFAULT_MIN_QUANTITY | Default minimum quantity for inventory | 5                     |
+
+## 📝 API Endpoints
+
+### Health Check
+
+- GET `/api/health` - Check API health status
 
 ### Products
 
-- `GET /api/products` - List all products
-- `GET /api/products/:id` - Get product details
-- `POST /api/products` - Create a new product
-- `PUT /api/products/:id` - Update a product
-- `DELETE /api/products/:id` - Delete a product
+- GET `/api/products` - List all products
+- POST `/api/products` - Create a new product
+- GET `/api/products/:id` - Get a specific product
+- PUT `/api/products/:id` - Update a product
+- DELETE `/api/products/:id` - Delete a product
 
 ### Categories
 
-- `GET /api/categories` - List all product categories
+- GET `/api/categories` - List all categories
+- POST `/api/categories` - Create a new category
+- GET `/api/categories/:id` - Get a specific category
+- PUT `/api/categories/:id` - Update a category
+- DELETE `/api/categories/:id` - Delete a category
 
 ### Inventory
 
-- `GET /api/inventory/low` - Get products with low inventory
+- GET `/api/inventory` - List all inventory items
+- POST `/api/inventory` - Create a new inventory item
+- GET `/api/inventory/:id` - Get a specific inventory item
+- PUT `/api/inventory/:id` - Update an inventory item
+- DELETE `/api/inventory/:id` - Delete an inventory item
 
-### System
+## 🧪 Testing
 
-- `GET /api/health` - Health check endpoint
+Run tests:
 
-## Project Structure
+```bash
+bun test
+```
+
+## 🐳 Docker Support
+
+Build and run with Docker:
+
+```bash
+# Build the image
+docker build -t backend-api .
+
+# Run the container
+docker run -p 3000:3000 backend-api
+```
+
+Or use docker-compose:
+
+```bash
+docker-compose up
+```
+
+## 📦 Project Structure
 
 ```
-inventory-api/
-├── .env.example                  # Example environment variables
-├── deps.ts                       # Centralized dependencies
-├── docker-compose.yml            # Docker Compose configuration
-├── Dockerfile                    # Docker container definition
-├── README.md                     # This documentation
-├── data/                         # Persistent database storage
-└── src/
-    ├── server.ts                 # Main application entry point
-    ├── config.ts                 # Configuration management
-    ├── controllers/              # Business logic
-    │   ├── product_controller.ts
-    │   ├── category_controller.ts
-    │   └── inventory_controller.ts
-    ├── db/
-    │   └── database.ts           # Database connection and initialization
-    ├── middleware/
-    │   └── index.ts              # Application middleware
-    └── routes/                   # API route definitions
-        ├── products.ts
-        ├── categories.ts
-        └── inventory.ts
+.
+├── src/
+│   ├── controllers/   # Request handlers
+│   ├── routes/        # API routes
+│   ├── middleware/    # Custom middleware
+│   ├── db/           # Database related files
+│   ├── config.ts     # Configuration
+│   └── server.ts     # Main application file
+├── data/             # SQLite database
+├── .env              # Environment variables
+├── .env.example      # Example environment file
+├── package.json      # Dependencies and scripts
+├── tsconfig.json     # TypeScript configuration
+├── Dockerfile        # Docker configuration
+└── docker-compose.yml # Docker Compose configuration
 ```
 
 ## Getting Started

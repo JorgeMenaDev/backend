@@ -1,48 +1,45 @@
-import { Application, Router, oakCors, logger, load } from '../deps.ts'
-import config from './config.ts'
+import { Elysia } from 'elysia'
+import { cors } from '@elysiajs/cors'
+import { StatusCodes } from 'http-status-codes'
 import productRoutes from './routes/products.ts'
 import categoryRoutes from './routes/categories.ts'
 import inventoryRoutes from './routes/inventory.ts'
-import { errorMiddleware, requestLoggerMiddleware } from './middleware/index.ts'
 
-// Load environment variables
-await load({ export: true })
+// Load environment variables - Bun has built-in support for .env files
+const port = Number(process.env.PORT) || 3000
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['*']
 
 // Initialize the app
-const app = new Application()
-const router = new Router()
-
-// Configure CORS - use a simpler configuration to avoid middleware issues
-const allowedOrigins = Deno.env.get('ALLOWED_ORIGINS')?.split(',') || ['*']
-app.use(
-	oakCors({
-		origin: allowedOrigins.includes('*') ? '*' : allowedOrigins,
-		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-		allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+const app = new Elysia()
+	.use(
+		cors({
+			origin: allowedOrigins.includes('*') ? '*' : allowedOrigins,
+			methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+			allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+		})
+	)
+	// Add request logger middleware
+	.onRequest(({ request }) => {
+		console.log(`${request.method} ${request.url}`)
 	})
-)
-
-// Apply middleware
-app.use(errorMiddleware)
-app.use(requestLoggerMiddleware)
-
-// Health check endpoint
-router.get('/api/health', ctx => {
-	ctx.response.body = { status: 'ok', timestamp: new Date().toISOString() }
-})
-
-// Apply routes
-app.use(productRoutes.routes())
-app.use(productRoutes.allowedMethods())
-app.use(categoryRoutes.routes())
-app.use(categoryRoutes.allowedMethods())
-app.use(inventoryRoutes.routes())
-app.use(inventoryRoutes.allowedMethods())
-app.use(router.routes())
-app.use(router.allowedMethods())
+	// Add error handling middleware
+	.onError(({ error, set }) => {
+		console.error('Error:', error)
+		set.status = error.status || StatusCodes.INTERNAL_SERVER_ERROR
+		return {
+			error: error.message || 'Internal Server Error',
+			status: set.status
+		}
+	})
+	// Health check endpoint
+	.get('/api/health', () => ({
+		status: 'ok',
+		timestamp: new Date().toISOString()
+	}))
+	// Mount routes
+	.group('/api', app => app.use(productRoutes).use(categoryRoutes).use(inventoryRoutes))
 
 // Start the server
-const portStr = Deno.env.get('PORT') || '3000'
-const port = parseInt(portStr)
-console.log(`Server running on http://0.0.0.0:${port}`)
-await app.listen({ port, hostname: '0.0.0.0' })
+app.listen(port, () => {
+	console.log(`Server running on http://0.0.0.0:${port}`)
+})

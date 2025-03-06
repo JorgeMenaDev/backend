@@ -1,6 +1,0 @@
-export { Application, Router } from 'https://deno.land/x/oak@v12.6.1/mod.ts'
-export { oakCors } from 'https://deno.land/x/cors@v1.2.2/mod.ts'
-export { DB } from 'https://deno.land/x/sqlite@v3.8/mod.ts'
-export * as logger from 'https://deno.land/std@0.220.1/log/mod.ts'
-export { StatusCodes as Status } from 'https://deno.land/x/https_status_codes@v1.2.0/mod.ts'
-export { load } from 'https://deno.land/std@0.220.1/dotenv/mod.ts'

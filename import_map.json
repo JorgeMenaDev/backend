@@ -1,8 +1,0 @@
-{
-	"imports": {
-		"std/": "https://deno.land/std@0.220.1/",
-		"oak": "https://deno.land/x/oak@v12.6.1/mod.ts",
-		"cors": "https://deno.land/x/cors@v1.2.2/mod.ts",
-		"sqlite": "https://deno.land/x/sqlite@v3.8/mod.ts"
-	}
-}

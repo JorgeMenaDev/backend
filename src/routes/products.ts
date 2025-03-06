@@ -1,19 +1,17 @@
-import { Router } from '../../deps.ts'
+import { Elysia } from 'elysia'
 import {
 	getProducts,
 	getProductById,
 	createProduct,
 	updateProduct,
 	deleteProduct
-} from '../controllers/product_controller.ts'
+} from '../controllers/product_controller'
 
-const router = new Router()
+const app = new Elysia({ prefix: '/products' })
+	.get('/', getProducts)
+	.get('/:id', getProductById)
+	.post('/', createProduct)
+	.put('/:id', updateProduct)
+	.delete('/:id', deleteProduct)
 
-router
-	.get('/api/products', getProducts)
-	.get('/api/products/:id', getProductById)
-	.post('/api/products', createProduct)
-	.put('/api/products/:id', updateProduct)
-	.delete('/api/products/:id', deleteProduct)
-
-export default router
+export default app

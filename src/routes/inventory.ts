@@ -1,4 +1,4 @@
-import { Router } from '../../deps.ts'
+import { Elysia } from 'elysia'
 import {
 	getLowInventory,
 	getTables,
@@ -6,18 +6,24 @@ import {
 	createQmPurposeRecord,
 	updateQmPurposeRecord,
 	deleteQmPurposeRecord
-} from '../controllers/inventory_controller.ts'
+} from '../controllers/inventory_controller'
 
-const router = new Router()
+const app = new Elysia({ prefix: '/inventory' })
 
 // Inventory endpoints
-router.get('/api/v1/inventory/low', getLowInventory)
+app.get('/low', getLowInventory)
 
 // Tables endpoints
-router.get('/api/v1/inventory/tables', getTables)
-router.get('/api/v1/inventory/tables/qm_purpose', getQmPurposeRecords)
-router.post('/api/v1/inventory/tables/qm_purpose', createQmPurposeRecord)
-router.put('/api/v1/inventory/tables/qm_purpose/:id', updateQmPurposeRecord)
-router.delete('/api/v1/inventory/tables/qm_purpose/:id', deleteQmPurposeRecord)
+app.group('/tables', app =>
+	app
+		.get('/', getTables)
+		.group('/qm_purpose', app =>
+			app
+				.get('/', getQmPurposeRecords)
+				.post('/', createQmPurposeRecord)
+				.put('/:id', updateQmPurposeRecord)
+				.delete('/:id', deleteQmPurposeRecord)
+		)
+)
 
-export default router
+export default app

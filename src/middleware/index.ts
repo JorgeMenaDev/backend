@@ -1,31 +1,18 @@
-import { logger, Status } from '../../deps.ts'
+import { StatusCodes } from 'http-status-codes'
+import type { ErrorHandler } from 'elysia'
 
 // Error handling middleware
-export async function errorMiddleware(ctx, next) {
-	try {
-		await next()
-	} catch (err) {
-		const status = err.status || Status.InternalServerError
-		const message = err.message || 'Internal Server Error'
-
-		logger.error(`Error: ${message}`)
-
-		ctx.response.status = status
-		ctx.response.body = {
-			success: false,
-			message,
-			timestamp: new Date().toISOString()
-		}
+export const errorHandler: ErrorHandler = ({ error, set }) => {
+	console.error('Error:', error)
+	set.status = error.status || StatusCodes.INTERNAL_SERVER_ERROR
+	return {
+		error: error.message || 'Internal Server Error',
+		status: set.status
 	}
 }
 
 // Request logger middleware
-export async function requestLoggerMiddleware(ctx, next) {
-	const start = Date.now()
-	await next()
-	const ms = Date.now() - start
-	const { method, url } = ctx.request
-	const { status } = ctx.response
-
-	logger.info(`${method} ${url.pathname} - ${status} - ${ms}ms`)
+export const requestLogger = ({ request }) => {
+	const timestamp = new Date().toISOString()
+	console.log(`[${timestamp}] ${request.method} ${request.url}`)
 }
