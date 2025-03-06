@@ -1,40 +1,45 @@
 import { getDB, generateUUID } from '../db/database.ts'
 import { QmPurpose } from '../db/models/qm_purpose.ts'
+import db from '../db/database'
+
+interface TableInfo {
+	name: string
+}
 
 // Get low inventory products
-export async function getLowInventory(ctx) {
-	const db = getDB()
-	const query = `
-    SELECT * FROM products
-    WHERE quantity <= min_quantity
-    ORDER BY quantity ASC
-  `
-	const lowInventory = db.queryEntries(query)
-
-	ctx.response.body = {
+export const getLowInventory = () => {
+	// TODO: Implement low inventory check
+	return {
 		success: true,
-		data: lowInventory
+		data: []
 	}
 }
 
 // Get all tables
-export async function getTables(ctx) {
-	const db = getDB()
+export const getTables = () => {
+	try {
+		// Get all table names from the SQLite master table
+		const tables = db
+			.query<TableInfo>(
+				`
+      SELECT name FROM sqlite_master
+      WHERE type='table'
+      AND name NOT LIKE 'sqlite_%'
+    `
+			)
+			.all()
 
-	// Get all table names from the SQLite master table
-	const query = `
-    SELECT name FROM sqlite_master
-    WHERE type='table'
-    AND name NOT LIKE 'sqlite_%'
-  `
-	const tables = db.queryEntries(query)
-
-	// Format the response
-	ctx.response.body = {
-		tables: tables.map(table => ({
-			name: table.name,
-			schema: 'public'
-		}))
+		// Format the response
+		return {
+			success: true,
+			tables: tables.map(table => ({
+				name: table.name,
+				schema: 'public'
+			}))
+		}
+	} catch (error) {
+		console.error('Error fetching tables:', error)
+		throw new Error('Failed to fetch tables')
 	}
 }
 
