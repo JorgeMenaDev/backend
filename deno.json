@@ -1,0 +1,20 @@
+{
+	"compilerOptions": {
+		"allowJs": true,
+		"lib": ["deno.window"],
+		"strict": true
+	},
+	"lint": {
+		"include": ["src/", "deps.ts"],
+		"exclude": ["data/"]
+	},
+	"fmt": {
+		"include": ["src/", "deps.ts"],
+		"exclude": ["data/"]
+	},
+	"tasks": {
+		"start": "deno run --allow-net --allow-read --allow-write --allow-env src/server.ts",
+		"dev": "deno run --watch --allow-net --allow-read --allow-write --allow-env src/server.ts"
+	},
+	"importMap": "./import_map.json"
+}
